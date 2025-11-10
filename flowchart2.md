@@ -1,227 +1,255 @@
-# Plankton Classifier System Architecture
+# Simple Project and Class Management Flowchart
 
-This document provides a system architecture diagram showing the complete data flow and system components for the plankton classifier system.
+A simplified flowchart for project creation, class merging, sub-classing, and model retraining.
 
 ---
 
-## System Architecture Diagram
+## Simple Flowchart
 
 ```mermaid
 flowchart TB
-    subgraph System["plankton_classifier.today"]
-        subgraph Input["Data Input & Processing"]
-            IFCB1[IFCB Instruments<br/>HRI, POC, TSA, XYZ]
-            SFTP[SFTP Transfer<br/>Port 22]
-            Uploads[Uploads<br/>ROI Files]
-            Archive[Archive<br/>ROI Storage]
-            ROIToPNG[ROI to PNG<br/>Conversion]
-        end
-        
-        subgraph Storage["Data Storage"]
-            PlanktonDB[(Plankton DB<br/>SQLite)]
-            ImageStorage[Image Storage<br/>File System<br/>project/year/month/class/]
-        end
-        
-        subgraph Models["Model & Classification"]
-            ModelFile[PyTorch Model<br/>plankton.pth<br/>ResNet-50]
-            Classification[Classification<br/>Engine]
-            ConfidenceCheck{Confidence<br/>>= 0.7?}
-            Classified[Classified<br/>Images]
-            Unclassified[Unclassified<br/>Images]
-        end
-        
-        subgraph ML["AI/ML Processing"]
-            ResNet[ResNet-50<br/>Neural Network]
-            Prediction[Prediction<br/>Engine]
-            ClassMapping[Class Mapping<br/>Model Classes]
-        end
-        
-        subgraph Output["Output & Visualization"]
-            DygraphData[Dygraph Data<br/>Time Series]
-            CountData[Plankton Count<br/>Aggregation]
-            WebInterface[Web Interface<br/>WWW]
-        end
-        
-        subgraph Management["Project & Class Management"]
-            ProjectMgmt[Project<br/>Management]
-            ClassMgmt[Class<br/>Management]
-            UserAuth[User<br/>Authentication<br/>Firebase]
-        end
-    end
+    Start([Start]) --> MainMenu{Select Operation}
     
-    User[👤 User]
+    %% PROJECT CREATION
+    MainMenu -->|Create Project| CreateProject[Create Project]
+    CreateProject --> EnterDetails[Enter Project Details]
+    EnterDetails --> SaveProject[(Save Project)]
+    SaveProject --> SelectClasses{Select Classes}
     
-    %% Data Flow - Input
-    IFCB1 -->|SFTP Push| SFTP
-    SFTP --> Uploads
-    Uploads --> Archive
-    Uploads --> ROIToPNG
+    SelectClasses -->|Existing Classes| ImportClasses[Import from Other Projects]
+    SelectClasses -->|New Classes| AddNewClass[Add New Class]
     
-    %% Data Flow - Processing
-    ROIToPNG --> Classification
-    ModelFile --> Classification
-    Classification --> ConfidenceCheck
-    ConfidenceCheck -->|Yes| Classified
-    ConfidenceCheck -->|No| Unclassified
+    ImportClasses --> EditClasses[Edit Selected Classes]
+    EditClasses --> AddImagesToClasses{Add Images<br/>to Classes?}
     
-    %% Data Flow - ML
-    Classification --> ResNet
-    ResNet --> Prediction
-    Prediction --> ClassMapping
-    ClassMapping --> Classification
+    AddNewClass --> EnterClassDetails[Enter Class Name & Details]
+    EnterClassDetails --> AddMinImages[Add Minimum 4 Images]
+    AddMinImages --> SaveNewClass[(Save New Class)]
+    SaveNewClass --> AddImagesToClasses
     
-    %% Data Flow - Storage
-    Classified --> ImageStorage
-    Unclassified --> ImageStorage
-    Classified --> PlanktonDB
-    Unclassified --> PlanktonDB
-    ROIToPNG --> PlanktonDB
+    AddImagesToClasses -->|Yes| SelectImages[Select Images]
+    AddImagesToClasses -->|No| ProjectComplete[Project Created]
     
-    %% Data Flow - Output
-    PlanktonDB --> CountData
-    CountData --> DygraphData
-    PlanktonDB --> WebInterface
-    ImageStorage --> WebInterface
-    DygraphData --> WebInterface
+    SelectImages --> AssignImages[Assign Images to Classes]
+    AssignImages --> SaveImages[(Save Images)]
+    SaveImages --> OrganizeFiles[Organize Image Files]
+    OrganizeFiles --> ProjectComplete
     
-    %% Management Flow
-    User --> UserAuth
-    UserAuth --> ProjectMgmt
-    UserAuth --> ClassMgmt
-    ProjectMgmt --> PlanktonDB
-    ClassMgmt --> PlanktonDB
-    ProjectMgmt --> ImageStorage
-    ClassMgmt --> ImageStorage
+    %% CLASS MERGING
+    MainMenu -->|Merge Classes| MergeClasses[Merge Classes]
+    MergeClasses --> SelectProject1[Select Project]
+    SelectProject1 --> SelectSourceClasses[Select 2+ Source Classes]
+    SelectSourceClasses --> SelectTargetClass[Select Target Class]
+    SelectTargetClass --> ConfirmMerge[Confirm Merge]
+    ConfirmMerge --> UpdateClassifications[(Update Classifications)]
+    UpdateClassifications --> OrganizeFilesMerge[Organize Image Files]
+    OrganizeFilesMerge --> RemoveSources[(Remove Source Classes)]
+    RemoveSources --> MergeComplete[Classes Merged]
+    MergeComplete --> RetrainModel1[Retrain Model]
     
-    %% User Access
-    User --> WebInterface
+    %% SUB-CLASSING
+    MainMenu -->|Sub-Class| SubClass[Sub-Class Split]
+    SubClass --> SelectProject2[Select Project]
+    SelectProject2 --> SelectSourceClass[Select Source Class]
+    SelectSourceClass --> LoadImages[Load Images]
+    LoadImages --> SelectImagesSplit[Select Images to Split]
+    SelectImagesSplit --> CreateTargetClass[Create Target Class]
+    CreateTargetClass --> AddMinImagesSplit[Add Minimum 4 Images]
+    AddMinImagesSplit --> SaveTargetClass[(Save Target Class)]
+    SaveTargetClass --> ConfirmSplit[Confirm Split]
+    ConfirmSplit --> UpdateSplit[(Update Classifications)]
+    UpdateSplit --> OrganizeFilesSplit[Organize Image Files]
+    OrganizeFilesSplit --> SplitComplete[Class Split Complete]
+    SplitComplete --> RetrainModel2[Retrain Model]
     
-    %% Styling
-    style System fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
-    style Input fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    style Storage fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    style Models fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    style ML fill:#fff9c4,stroke:#f9a825,stroke-width:2px
-    style Output fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
-    style Management fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    %% ADD NEW CLASS TO EXISTING PROJECT
+    MainMenu -->|Add Class| AddClass[Add Class]
+    AddClass --> SelectProject3[Select Project]
+    SelectProject3 --> EnterNewClass[Enter Class Details]
+    EnterNewClass --> AddMinImagesNew[Add Minimum 4 Images]
+    AddMinImagesNew --> SaveClassNew[(Save Class)]
+    SaveClassNew --> OrganizeFilesNew[Organize Image Files]
+    OrganizeFilesNew --> ClassAdded[Class Added]
+    ClassAdded --> RetrainModel3[Retrain Model]
     
-    style IFCB1 fill:#ffccbc,stroke:#d84315
-    style Uploads fill:#ffccbc,stroke:#d84315
-    style Archive fill:#ffccbc,stroke:#d84315
-    style ROIToPNG fill:#ffccbc,stroke:#d84315
+    ProjectComplete --> RetrainModel4[Retrain Model]
+    RetrainModel1 --> End([End])
+    RetrainModel2 --> End
+    RetrainModel3 --> End
+    RetrainModel4 --> End
     
-    style PlanktonDB fill:#c8e6c9,stroke:#2e7d32
-    style ImageStorage fill:#c8e6c9,stroke:#2e7d32
+    %% Styling - Simple Black and White
+    style Start fill:#ffffff,stroke:#000000,stroke-width:2px
+    style MainMenu fill:#f5f5f5,stroke:#000000,stroke-width:2px
+    style SelectClasses fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style AddImagesToClasses fill:#e8e8e8,stroke:#000000,stroke-width:2px
     
-    style ModelFile fill:#e1bee7,stroke:#6a1b9a
-    style Classification fill:#e1bee7,stroke:#6a1b9a
-    style ConfidenceCheck fill:#e1bee7,stroke:#6a1b9a
-    style Classified fill:#e1bee7,stroke:#6a1b9a
-    style Unclassified fill:#e1bee7,stroke:#6a1b9a
+    style ProjectComplete fill:#ffffff,stroke:#000000,stroke-width:2px
+    style MergeComplete fill:#ffffff,stroke:#000000,stroke-width:2px
+    style SplitComplete fill:#ffffff,stroke:#000000,stroke-width:2px
+    style ClassAdded fill:#ffffff,stroke:#000000,stroke-width:2px
+    style End fill:#ffffff,stroke:#000000,stroke-width:2px
     
-    style ResNet fill:#fff59d,stroke:#f57f17
-    style Prediction fill:#fff59d,stroke:#f57f17
-    style ClassMapping fill:#fff59d,stroke:#f57f17
+    style SaveProject fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style SaveNewClass fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style SaveImages fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style UpdateClassifications fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style RemoveSources fill:#d3d3d3,stroke:#000000,stroke-width:2px
+    style SaveTargetClass fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style UpdateSplit fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style SaveClassNew fill:#e8e8e8,stroke:#000000,stroke-width:2px
     
-    style DygraphData fill:#b3e5fc,stroke:#01579b
-    style CountData fill:#b3e5fc,stroke:#01579b
-    style WebInterface fill:#b3e5fc,stroke:#01579b
+    style OrganizeFiles fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style OrganizeFilesMerge fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style OrganizeFilesSplit fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style OrganizeFilesNew fill:#e8e8e8,stroke:#000000,stroke-width:2px
     
-    style ProjectMgmt fill:#f8bbd0,stroke:#880e4f
-    style ClassMgmt fill:#f8bbd0,stroke:#880e4f
-    style UserAuth fill:#f8bbd0,stroke:#880e4f
-    
-    style User fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style RetrainModel1 fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style RetrainModel2 fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style RetrainModel3 fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style RetrainModel4 fill:#e8e8e8,stroke:#000000,stroke-width:2px
 ```
 
 ---
 
-## Component Descriptions
+## Operation Explanations
 
-### Data Input & Processing
-- **IFCB Instruments**: Imaging FlowCytobot instruments (HRI, POC, TSA, XYZ) that capture plankton images
-- **SFTP Transfer**: Secure file transfer protocol for receiving ROI files from instruments
-- **Uploads**: Temporary storage for incoming ROI files
-- **Archive**: Long-term storage of original ROI files
-- **ROI to PNG Conversion**: Process that extracts individual plankton images from ROI files and converts them to PNG format
+### 1. Create Project
 
-### Data Storage
-- **Plankton DB (SQLite)**: Central database storing:
-  - Project information
-  - Class definitions
-  - Image metadata
-  - Classification results
-  - Bin data
-  - User information
-- **Image Storage (File System)**: Hierarchical storage organized by:
-  - Project code
-  - Year/Month
-  - Class name
-  - Individual image files
+**What it does**: Creates a new project with classes that can be edited.
 
-### Model & Classification
-- **PyTorch Model (plankton.pth)**: Pre-trained ResNet-50 deep learning model
-- **Classification Engine**: Core processing that applies the model to images
-- **Confidence Check**: Threshold filter (>= 0.7) to determine classification reliability
-- **Classified Images**: Images with high confidence predictions
-- **Unclassified Images**: Images with low confidence that require manual review
+**Key Steps**:
+1. Enter project details
+2. Save project
+3. Select classes:
+   - **Option A**: Import existing classes from other projects
+   - **Option B**: Add new classes (requires minimum 4 images each)
+4. Edit selected classes as needed
+5. Optionally add images to classes
+6. System organizes image files automatically
+7. **Model is retrained** after project creation
 
-### AI/ML Processing
-- **ResNet-50 Neural Network**: Deep convolutional neural network architecture
-- **Prediction Engine**: Inference engine that processes images through the model
-- **Class Mapping**: Maps model output indices to class names
-
-### Output & Visualization
-- **Dygraph Data**: Time series data for temporal visualization
-- **Plankton Count Aggregation**: Statistical summaries of classified images
-- **Web Interface (WWW)**: User-facing web application providing:
-  - Image browsing and classification
-  - Project management
-  - Class management
-  - Data visualization
-  - Reclassification tools
-
-### Project & Class Management
-- **Project Management**: Create, update, and manage research projects
-- **Class Management**: Define and manage plankton classes (merge, split, add)
-- **User Authentication (Firebase)**: Secure user authentication and authorization
+**Important**: New classes require at least 4 images to be created.
 
 ---
 
-## Data Flow Summary
+### 2. Merge Classes
 
-1. **Image Acquisition**: IFCB instruments capture plankton images and generate ROI files
-2. **Data Transfer**: ROI files are transferred via SFTP to the upload directory
-3. **Archival**: Original ROI files are archived for long-term storage
-4. **Image Extraction**: ROI files are processed to extract individual PNG images
-5. **Classification**: Each image is classified using the ResNet-50 model
-6. **Confidence Filtering**: Images are separated by confidence threshold
-7. **Storage**: Classified images and metadata are stored in database and file system
-8. **Aggregation**: Count data is aggregated for time series analysis
-9. **Visualization**: Data is presented through web interface and dygraph visualizations
-10. **Management**: Users manage projects and classes through authenticated web interface
+**What it does**: Combines multiple classes into one target class.
 
----
+**Key Steps**:
+1. Select project
+2. Select 2 or more source classes
+3. Select target class
+4. Confirm merge
+5. Update all image classifications
+6. System organizes image files automatically
+7. Remove source classes
+8. **Model is retrained** after merge
 
-## Key Technologies
-
-- **Backend**: FastAPI (Python)
-- **Database**: SQLite
-- **ML Framework**: PyTorch
-- **Model Architecture**: ResNet-50
-- **Authentication**: Firebase Admin SDK
-- **File Transfer**: SFTP
-- **Frontend**: HTML, JavaScript, CSS
-- **Visualization**: Dygraph.js
+**Use Case**: Consolidating similar classes or correcting taxonomy.
 
 ---
 
-## System Boundaries
+### 3. Sub-Class (Split)
 
-- **plankton_classifier.today**: Main system boundary containing all core processing components
-- **External Systems**: IFCB instruments (data sources), Firebase (authentication)
-- **User Interface**: Web browser accessing the web interface
+**What it does**: Splits images from one class into a new sub-class.
+
+**Key Steps**:
+1. Select project
+2. Select source class
+3. Load images from source class
+4. Select images to split out
+5. Create target class (new sub-class)
+6. Add minimum 4 images to new class
+7. Save target class
+8. Confirm split
+9. Update classifications
+10. System organizes image files automatically
+11. **Model is retrained** after split
+
+**Important**: New sub-class requires at least 4 images.
 
 ---
 
-This architecture diagram provides a comprehensive view of the plankton classifier system, showing how data flows from instrument capture through classification to final visualization and user interaction.
+### 4. Add Class to Existing Project
+
+**What it does**: Adds a new class to an existing project.
+
+**Key Steps**:
+1. Select project
+2. Enter class details
+3. Add minimum 4 images to the class
+4. Save class
+5. System organizes image files automatically
+6. **Model is retrained** after adding class
+
+**Important**: New classes require at least 4 images.
+
+---
+
+## Key Points
+
+### Classes and Model Relationship
+
+**Question**: Do classes need to be in the model to be visible in the web UI?
+
+**Answer**: 
+- **Classes can exist in the UI without being in the model**
+- Classes not in the model will appear in the web UI but require **manual classification**
+- The model will only auto-classify images to classes it was trained on
+- **After model retraining**, new classes are incorporated and can be auto-classified
+
+### Model Retraining
+
+**When model is retrained**:
+- After project creation with new classes
+- After merging classes
+- After sub-classing (splitting)
+- After adding new classes
+
+**What happens during retraining**:
+- New model incorporates all current classes
+- Model learns from all available training images
+- New classes become available for auto-classification
+- Previous model is kept for reference
+
+### Image Requirements
+
+- **Minimum 4 images required** for any new class
+- This ensures sufficient training data for model retraining
+- Images are automatically organized into proper folder structure
+
+### Automatic File Organization
+
+All operations automatically handle image file storage:
+- Files organized by: `project/year/month/class_name/`
+- No manual file management needed
+- System maintains consistency between database and file system
+
+---
+
+## Quick Reference
+
+| Operation | Minimum Images | Model Retraining | Auto-Classification |
+|-----------|----------------|------------------|---------------------|
+| **Create Project** | 4 per new class | Yes | After retraining |
+| **Merge Classes** | N/A | Yes | After retraining |
+| **Sub-Class** | 4 for new class | Yes | After retraining |
+| **Add Class** | 4 required | Yes | After retraining |
+
+---
+
+## Workflow Summary
+
+1. **Create Project** → Select/Edit Classes → Add Images → **Retrain Model**
+2. **Merge Classes** → Update Classifications → **Retrain Model**
+3. **Sub-Class** → Create New Class (4+ images) → **Retrain Model**
+4. **Add Class** → Add 4+ Images → **Retrain Model**
+
+**All operations trigger model retraining to incorporate changes.**
+
+---
+
+This simplified flowchart focuses on the core operations with automatic file management and model retraining.
+

@@ -53,9 +53,9 @@ flowchart TB
     SelectProject2 --> SelectSourceClass[Select Source Class]
     SelectSourceClass --> LoadImages[Load Images]
     LoadImages --> SelectImagesSplit[Select Images to Split]
-    SelectImagesSplit --> CreateTargetClass[Create Target Class]
-    CreateTargetClass --> AddMinImagesSplit[Add Minimum 4 Images]
-    AddMinImagesSplit --> SaveTargetClass[(Save Target Class)]
+    SelectImagesSplit --> EnterNewClassName[Enter New Class Name<br/>Different from Source]
+    EnterNewClassName --> AddMinImagesSplit[Add Minimum 4 Images]
+    AddMinImagesSplit --> SaveTargetClass[(Save New Class)]
     SaveTargetClass --> ConfirmSplit[Confirm Split]
     ConfirmSplit --> UpdateSplit[(Update Classifications)]
     UpdateSplit --> OrganizeFilesSplit[Organize Image Files]
@@ -153,22 +153,26 @@ flowchart TB
 
 ### 3. Sub-Class (Split)
 
-**What it does**: Splits images from one class into a new sub-class.
+**What it does**: Splits images from one class into a new sub-class with a different name.
 
 **Key Steps**:
 1. Select project
-2. Select source class
+2. Select source class (e.g., "chaetoceros")
 3. Load images from source class
 4. Select images to split out
-5. Create target class (new sub-class)
+5. Enter new class name (different from source, e.g., "chaetoceros_didymus")
 6. Add minimum 4 images to new class
-7. Save target class
+7. Save new class
 8. Confirm split
 9. Update classifications
 10. System organizes image files automatically
 11. **Model is retrained** after split
 
-**Important**: New sub-class requires at least 4 images.
+**Important**: 
+- New sub-class requires at least 4 images
+- Source class and new class have **different names**
+- Source class remains with remaining images
+- New class is created with split images
 
 ---
 

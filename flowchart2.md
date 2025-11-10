@@ -16,98 +16,68 @@ flowchart TB
     EnterDetails --> SaveProject[(Save Project)]
     SaveProject --> SelectClasses{Select Classes}
     
-    SelectClasses -->|Existing Classes| ImportClasses[Import from Other Projects]
-    SelectClasses -->|New Classes| AddNewClass[Add New Class]
+    SelectClasses -->|Existing| ImportClasses[Import Classes<br/>from Other Projects]
+    SelectClasses -->|New| CreateNewClass[Create New Class<br/>Name + 4+ Images]
     
-    ImportClasses --> EditClasses[Edit Selected Classes]
-    EditClasses --> AddImagesToClasses{Add Images<br/>to Classes?}
+    ImportClasses --> EditClasses[Edit Classes]
+    EditClasses --> ProjectComplete[Project Created]
     
-    AddNewClass --> EnterClassDetails[Enter Class Name & Details]
-    EnterClassDetails --> AddMinImages[Add Minimum 4 Images]
-    AddMinImages --> SaveNewClass[(Save New Class)]
-    SaveNewClass --> AddImagesToClasses
+    CreateNewClass --> SaveNewClass[(Save Class)]
+    SaveNewClass --> ProjectComplete
     
-    AddImagesToClasses -->|Yes| SelectImages[Select Images]
-    AddImagesToClasses -->|No| ProjectComplete[Project Created]
-    
-    SelectImages --> AssignImages[Assign Images to Classes]
-    AssignImages --> SaveImages[(Save Images)]
-    SaveImages --> OrganizeFiles[Organize Image Files]
-    OrganizeFiles --> ProjectComplete
+    ProjectComplete --> RetrainModel[Retrain Model]
     
     %% CLASS MERGING
     MainMenu -->|Merge Classes| MergeClasses[Merge Classes]
-    MergeClasses --> SelectProject1[Select Project]
-    SelectProject1 --> SelectSourceClasses[Select 2+ Source Classes]
-    SelectSourceClasses --> SelectTargetClass[Select Target Class]
-    SelectTargetClass --> ConfirmMerge[Confirm Merge]
-    ConfirmMerge --> UpdateClassifications[(Update Classifications)]
-    UpdateClassifications --> OrganizeFilesMerge[Organize Image Files]
-    OrganizeFilesMerge --> RemoveSources[(Remove Source Classes)]
-    RemoveSources --> MergeComplete[Classes Merged]
-    MergeComplete --> RetrainModel1[Retrain Model]
+    MergeClasses --> SelectProject[Select Project]
+    SelectProject --> SelectSources[Select 2+ Source Classes]
+    SelectSources --> SelectTarget[Select Target Class]
+    SelectTarget --> ConfirmMerge[Confirm Merge]
+    ConfirmMerge --> UpdateDB[(Update Database<br/>& Move Files)]
+    UpdateDB --> RemoveSources[(Remove Source Classes)]
+    RemoveSources --> RetrainModel
     
     %% SUB-CLASSING
-    MainMenu -->|Sub-Class| SubClass[Sub-Class Split]
-    SubClass --> SelectProject2[Select Project]
-    SelectProject2 --> SelectSourceClass[Select Source Class]
-    SelectSourceClass --> LoadImages[Load Images]
-    LoadImages --> SelectImagesSplit[Select Images to Split]
-    SelectImagesSplit --> EnterNewClassName[Enter New Class Name<br/>Different from Source]
-    EnterNewClassName --> AddMinImagesSplit[Add Minimum 4 Images]
-    AddMinImagesSplit --> SaveTargetClass[(Save New Class)]
-    SaveTargetClass --> ConfirmSplit[Confirm Split]
-    ConfirmSplit --> UpdateSplit[(Update Classifications)]
-    UpdateSplit --> OrganizeFilesSplit[Organize Image Files]
-    OrganizeFilesSplit --> SplitComplete[Class Split Complete]
-    SplitComplete --> RetrainModel2[Retrain Model]
+    MainMenu -->|Split Class| SplitClass[Split Class]
+    SplitClass --> SelectProject
+    SelectProject --> SelectSource[Select Source Class]
+    SelectSource --> SelectImages[Select Images to Split]
+    SelectImages --> EnterNewName[Enter New Class Name]
+    EnterNewName --> CheckImages{Has 4+<br/>Images?}
+    CheckImages -->|No| AddMoreImages[Add More Images]
+    AddMoreImages --> CheckImages
+    CheckImages -->|Yes| SaveNewClassSplit[(Save New Class)]
+    SaveNewClassSplit --> UpdateDB2[(Update Database<br/>& Move Files)]
+    UpdateDB2 --> RetrainModel
     
-    %% ADD NEW CLASS TO EXISTING PROJECT
+    %% ADD NEW CLASS
     MainMenu -->|Add Class| AddClass[Add Class]
-    AddClass --> SelectProject3[Select Project]
-    SelectProject3 --> EnterNewClass[Enter Class Details]
-    EnterNewClass --> AddMinImagesNew[Add Minimum 4 Images]
-    AddMinImagesNew --> SaveClassNew[(Save Class)]
-    SaveClassNew --> OrganizeFilesNew[Organize Image Files]
-    OrganizeFilesNew --> ClassAdded[Class Added]
-    ClassAdded --> RetrainModel3[Retrain Model]
+    AddClass --> SelectProject
+    SelectProject --> EnterClass[Enter Class Name]
+    EnterClass --> AddImages[Add 4+ Images]
+    AddImages --> SaveClass[(Save Class)]
+    SaveClass --> RetrainModel
     
-    ProjectComplete --> RetrainModel4[Retrain Model]
-    RetrainModel1 --> End([End])
-    RetrainModel2 --> End
-    RetrainModel3 --> End
-    RetrainModel4 --> End
+    RetrainModel --> End([End])
     
     %% Styling - Simple Black and White
     style Start fill:#ffffff,stroke:#000000,stroke-width:2px
     style MainMenu fill:#f5f5f5,stroke:#000000,stroke-width:2px
     style SelectClasses fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style AddImagesToClasses fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style CheckImages fill:#e8e8e8,stroke:#000000,stroke-width:2px
     
     style ProjectComplete fill:#ffffff,stroke:#000000,stroke-width:2px
-    style MergeComplete fill:#ffffff,stroke:#000000,stroke-width:2px
-    style SplitComplete fill:#ffffff,stroke:#000000,stroke-width:2px
-    style ClassAdded fill:#ffffff,stroke:#000000,stroke-width:2px
     style End fill:#ffffff,stroke:#000000,stroke-width:2px
     
     style SaveProject fill:#e8e8e8,stroke:#000000,stroke-width:2px
     style SaveNewClass fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style SaveImages fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style UpdateClassifications fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style SaveNewClassSplit fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style SaveClass fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style UpdateDB fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style UpdateDB2 fill:#e8e8e8,stroke:#000000,stroke-width:2px
     style RemoveSources fill:#d3d3d3,stroke:#000000,stroke-width:2px
-    style SaveTargetClass fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style UpdateSplit fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style SaveClassNew fill:#e8e8e8,stroke:#000000,stroke-width:2px
     
-    style OrganizeFiles fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style OrganizeFilesMerge fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style OrganizeFilesSplit fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style OrganizeFilesNew fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    
-    style RetrainModel1 fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style RetrainModel2 fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style RetrainModel3 fill:#e8e8e8,stroke:#000000,stroke-width:2px
-    style RetrainModel4 fill:#e8e8e8,stroke:#000000,stroke-width:2px
+    style RetrainModel fill:#e8e8e8,stroke:#000000,stroke-width:2px
 ```
 
 ---
@@ -116,79 +86,58 @@ flowchart TB
 
 ### 1. Create Project
 
-**What it does**: Creates a new project with classes that can be edited.
+**What it does**: Creates a new project with classes.
 
-**Key Steps**:
-1. Enter project details
-2. Save project
-3. Select classes:
-   - **Option A**: Import existing classes from other projects
-   - **Option B**: Add new classes (requires minimum 4 images each)
-4. Edit selected classes as needed
-5. Optionally add images to classes
-6. System organizes image files automatically
-7. **Model is retrained** after project creation
-
-**Important**: New classes require at least 4 images to be created.
+**Steps**:
+1. Enter project details → Save project
+2. Choose classes:
+   - **Import existing** classes from other projects (can edit)
+   - **Create new** class (name + minimum 4 images)
+3. **Model is retrained** automatically
 
 ---
 
 ### 2. Merge Classes
 
-**What it does**: Combines multiple classes into one target class.
+**What it does**: Combines multiple classes into one.
 
-**Key Steps**:
+**Steps**:
 1. Select project
-2. Select 2 or more source classes
+2. Select 2+ source classes
 3. Select target class
-4. Confirm merge
-5. Update all image classifications
-6. System organizes image files automatically
-7. Remove source classes
-8. **Model is retrained** after merge
-
-**Use Case**: Consolidating similar classes or correcting taxonomy.
+4. Confirm → System updates database & moves files
+5. Source classes removed
+6. **Model is retrained** automatically
 
 ---
 
-### 3. Sub-Class (Split)
+### 3. Split Class
 
-**What it does**: Splits images from one class into a new sub-class with a different name.
+**What it does**: Splits images from one class into a new class with different name.
 
-**Key Steps**:
+**Steps**:
 1. Select project
-2. Select source class (e.g., "chaetoceros")
-3. Load images from source class
-4. Select images to split out
-5. Enter new class name (different from source, e.g., "chaetoceros_didymus")
-6. Add minimum 4 images to new class
-7. Save new class
-8. Confirm split
-9. Update classifications
-10. System organizes image files automatically
-11. **Model is retrained** after split
+2. Select source class
+3. Select images to split
+4. Enter new class name (different from source)
+5. Ensure 4+ images selected (add more if needed)
+6. Save new class → System updates database & moves files
+7. **Model is retrained** automatically
 
-**Important**: 
-- New sub-class requires at least 4 images
-- Source class and new class have **different names**
-- Source class remains with remaining images
-- New class is created with split images
+**Example**: Split "chaetoceros" → Create "chaetoceros_didymus"
 
 ---
 
-### 4. Add Class to Existing Project
+### 4. Add Class
 
-**What it does**: Adds a new class to an existing project.
+**What it does**: Adds a new class to existing project.
 
-**Key Steps**:
+**Steps**:
 1. Select project
-2. Enter class details
-3. Add minimum 4 images to the class
+2. Enter class name
+3. Add minimum 4 images
 4. Save class
-5. System organizes image files automatically
-6. **Model is retrained** after adding class
-
-**Important**: New classes require at least 4 images.
+5. **Model is retrained** automatically
 
 ---
 
@@ -246,12 +195,13 @@ All operations automatically handle image file storage:
 
 ## Workflow Summary
 
-1. **Create Project** → Select/Edit Classes → Add Images → **Retrain Model**
-2. **Merge Classes** → Update Classifications → **Retrain Model**
-3. **Sub-Class** → Create New Class (4+ images) → **Retrain Model**
-4. **Add Class** → Add 4+ Images → **Retrain Model**
+All operations follow this pattern:
+- Perform operation → System handles files automatically → **Retrain Model**
 
-**All operations trigger model retraining to incorporate changes.**
+**Key Rules**:
+- New classes require minimum 4 images
+- All file operations are automatic
+- Model retraining happens automatically after any change
 
 ---
 
